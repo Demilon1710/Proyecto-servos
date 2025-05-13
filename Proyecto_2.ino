@@ -1,48 +1,59 @@
-include <Servo.h>          // Incluye la librería Servo
+#include <Servo.h>          // Incluye la librería Servo
 
-// Pines
-const int servo1Pin = 9;
-const int servo2Pin = 10;
-const int servo3Pin = A0;
-const int servo4Pin = A1;
+Servo myservoa;
+Servo myservob;
+Servo myservoc;
+Servo myservod;
 
-const int btnServo1Inc = 2;
-const int btnServo1Dec = 3;
-const int btnServo2Inc = 4;
-const int btnServo2Dec = 5;
+const int botonMover = 2;
+const int botonReposo = 4;
+const int ledMover = 6;
+const int ledReposo = 7;
+bool botona;
+bool botonoff;
 
-// Variables de estado
-Servo servo1;
-Servo servo2;
-Servo servo3;
-Servo servo4;
+void moverNangulo(int angulo);
 
-int posServo1 = 90; // Posición inicial (grados)
-int posServo2 = 90;
-
+const long intervalc = 500; //Variable para el intervalo que indica cuánto tardará el cambio de estado en milisegundos
+unsigned long previousMillis = 0; //Variable para reiniciar el contador de tiempo
 
 void setup() {
-  Serial.begin(9600);
+  myservoa.attach(3);
+  myservob.attach(9);
+  myservoc.attach(5);
+  myservod.attach(11);
 
-  servo1.attach(servo1Pin);
-  servo2.attach(servo2Pin);
+  pinMode(botonMover, INPUT);
+  pinMode(botonReposo, INPUT);
+  pinMode(ledMover, OUTPUT);
+  pinMode(ledReposo, OUTPUT);
 
-  pinMode(btnServo1Inc, INPUT_PULLUP);
-  pinMode(btnServo1Dec, INPUT_PULLUP);
-  pinMode(btnServo2Inc, INPUT_PULLUP);
-  pinMode(btnServo2Dec, INPUT_PULLUP);
-
- 
-
-  // Posición inicial servos
-  servo1.write(posServo1);
-  servo2.write(posServo2);
-
-  mostrarEstado();
-
+  moverNangulo(0);  
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  botona = digitalRead(botonMover);
+  botonoff = digitalRead(botonReposo);
+  if (botona == HIGH) {
+    moverNangulo(36);
+    digitalWrite(ledMover, HIGH);
+    digitalWrite(ledReposo, LOW);
+  }
+  if (botonoff == HIGH) {
+    moverNangulo(0);
+    digitalWrite(ledReposo, HIGH);
+    digitalWrite(ledMover, LOW);
+  }
+  unsigned long completeMillis = millis();
+  if (completeMillis - previousMillis >= intervalc) {
+    previousMillis = completeMillis;
+}
+delay(1);
+}
 
+void moverNangulo(int angulo){
+  myservoa.write(angulo);
+  myservob.write(angulo);
+  myservoc.write(angulo);
+  myservod.write(angulo);
 }
