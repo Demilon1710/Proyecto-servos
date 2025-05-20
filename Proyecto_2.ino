@@ -4,14 +4,28 @@ Servo myservoa;
 Servo myservob;
 Servo myservoc;
 Servo myservod;
-
-const int botonMover = 2;
-const int botonReposo = 4;
-const int ledMover = 6;
-const int ledReposo = 7;
-bool botona;
-bool botonoff;
-
+int potaPin = A0; //Pin al que se conecta el potenciómetro
+int potbPin = A1;
+int potcPin = A3;
+int potdPin = A5; 
+int pota = 0;
+int potb = 0;
+int potc = 0;
+int potd = 0; //Contador del valor en el potenciómetro
+const int botonA = 12;
+const int botonB = 10;
+const int botonC = 8;
+const int botonD = 7;
+const int botonE = 4;
+const int botonF = 2;
+const int palanca = 1;
+bool cero;
+bool treintaiseis;
+bool setentaidos;
+bool cientoocho;
+bool cientocuarentaicuatro;
+bool cientoochenta;
+bool estado;
 void moverNangulo(int angulo);
 
 const long intervalc = 500; //Variable para el intervalo que indica cuánto tardará el cambio de estado en milisegundos
@@ -23,30 +37,73 @@ void setup() {
   myservoc.attach(5);
   myservod.attach(11);
 
-  pinMode(botonMover, INPUT);
-  pinMode(botonReposo, INPUT);
-  pinMode(ledMover, OUTPUT);
-  pinMode(ledReposo, OUTPUT);
+  pinMode(botonA, INPUT);
+  pinMode(botonB, INPUT);
+  pinMode(botonC, INPUT);
+  pinMode(botonD, INPUT);
+  pinMode(botonE, INPUT);
+  pinMode(botonF, INPUT);
+  pinMode(palanca, INPUT);
 
   moverNangulo(0);  
+
+  Serial.begin(9600); //Inicial serialización
 }
 
 void loop() {
-  botona = digitalRead(botonMover);
-  botonoff = digitalRead(botonReposo);
-  if (botona == HIGH) {
-    moverNangulo(36);
-    digitalWrite(ledMover, HIGH);
-    digitalWrite(ledReposo, LOW);
-  }
-  if (botonoff == HIGH) {
+while(estado == HIGH){
+cero = digitalRead(botonA);
+treintaiseis = digitalRead(botonB);
+setentaidos = digitalRead(botonC);
+cientoocho = digitalRead(botonD);
+cientocuarentaicuatro = digitalRead(botonE);
+cientoochenta = digitalRead(botonF);
+estado = digitalRead(palanca);
+  if (cero == HIGH) {
     moverNangulo(0);
-    digitalWrite(ledReposo, HIGH);
-    digitalWrite(ledMover, LOW);
+  }
+  if (treintaiseis == HIGH) {
+    moverNangulo(36);
+  }
+  if (setentaidos == HIGH){
+    moverNangulo(72);
+  }
+  if (cientoocho == HIGH){
+    moverNangulo(108);
+  }
+  if (cientocuarentaicuatro == HIGH){
+  moverNangulo(144);
+  }
+  if (cientoochenta == HIGH){
+  moverNangulo(180);
   }
   unsigned long completeMillis = millis();
   if (completeMillis - previousMillis >= intervalc) {
     previousMillis = completeMillis;
+  }
+}
+while(estado == LOW){
+  pota = analogRead(potaPin); //El contador cambiará de acuerdo a la lectura del potenciómetro en el pin A3
+  potb = analogRead(potbPin);
+  potc = analogRead(potcPin);
+  potd = analogRead(potdPin);
+  estado = digitalRead(palanca);
+  int potenciasa = map(pota, 0, 1023, 0, 180); //Mapeo desde 0 a 1024 para 0 a 180
+  int potenciasb = map(potb, 0, 1023, 0, 180);
+  int potenciasc = map(potc, 0, 1023, 0, 180);
+  int potenciasd = map(potd, 0, 1023, 0, 180);
+  Serial.println("Potenciómetro A: ");
+  Serial.println(potenciasa); //Escribir el valor actual del potenciómetro mapeado
+  Serial.println("Potenciómetro B: ");
+  Serial.println(potenciasb);
+  Serial.println("Potenciómetro C: ");
+  Serial.println(potenciasc);
+  Serial.println("Potenciómetro D: ");
+  Serial.println(potenciasd);
+  myservoa.write(potenciasa); //Desde el pin del servo, se mandará el valor mapeado del potenciómetro
+  myservob.write(potenciasb);
+  myservoc.write(potenciasc);
+  myservod.write(potenciasd);
 }
 delay(1);
 }
