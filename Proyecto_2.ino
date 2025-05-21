@@ -14,18 +14,13 @@ int potc = 0;
 int potd = 0; //Contador del valor en el potenciómetro
 const int botonA = 12;
 const int botonB = 10;
-const int botonC = 8;
-const int botonD = 7;
-const int botonE = 4;
-const int botonF = 2;
-const int palanca = 1;
-bool cero;
-bool treintaiseis;
-bool setentaidos;
-bool cientoocho;
-bool cientocuarentaicuatro;
-bool cientoochenta;
+const int palanca = 6;
+bool adelante;
+bool atras;
 bool estado;
+int current = 0;
+int next = 0;
+
 void moverNangulo(int angulo);
 
 const long intervalc = 500; //Variable para el intervalo que indica cuánto tardará el cambio de estado en milisegundos
@@ -39,10 +34,6 @@ void setup() {
 
   pinMode(botonA, INPUT);
   pinMode(botonB, INPUT);
-  pinMode(botonC, INPUT);
-  pinMode(botonD, INPUT);
-  pinMode(botonE, INPUT);
-  pinMode(botonF, INPUT);
   pinMode(palanca, INPUT);
 
   moverNangulo(0);  
@@ -51,38 +42,98 @@ void setup() {
 }
 
 void loop() {
-while(estado == HIGH){
-cero = digitalRead(botonA);
-treintaiseis = digitalRead(botonB);
-setentaidos = digitalRead(botonC);
-cientoocho = digitalRead(botonD);
-cientocuarentaicuatro = digitalRead(botonE);
-cientoochenta = digitalRead(botonF);
 estado = digitalRead(palanca);
-  if (cero == HIGH) {
-    moverNangulo(0);
+if(estado == HIGH){
+adelante = digitalRead(botonA);
+atras = digitalRead(botonB);
+Serial.println(next);
+Serial.println(current);
+  switch(current){
+    //Condiciones de cambio desde el estado 0
+    case 0:
+    if (adelante == HIGH)
+      next = 1;
+    else
+      next = 0;
+    break;
+    //Condiciones de cambio desde el estado 1
+    case 1:
+    if (adelante == HIGH)
+      next = 2;
+    else 
+    if (atras == HIGH)
+      next = 0;
+    else
+      next = 1;
+    break;
+    //Condiciones de cambio desde el estado 2
+    case 2:
+    if (adelante == HIGH)
+      next = 3;
+    else
+    if (atras == HIGH)
+      next = 1;
+    else
+      next = 2;
+    break;
+    //Condiciones de cambio desde el estado 3
+    case 3:
+    if (adelante == HIGH)
+      next = 4;
+    else
+    if (atras == HIGH)
+      next = 2;
+    else
+      next = 3;
+    break;
+    case 4:
+    if (adelante == HIGH)
+      next = 5;
+    else
+    if (atras == HIGH)
+      next = 3;
+    else
+      next = 4;
+    break;
+    case 5:
+    if (atras == HIGH)
+      next = 4;
+    else
+      next = 5;
+    break;
   }
-  if (treintaiseis == HIGH) {
-    moverNangulo(36);
-  }
-  if (setentaidos == HIGH){
-    moverNangulo(72);
-  }
-  if (cientoocho == HIGH){
-    moverNangulo(108);
-  }
-  if (cientocuarentaicuatro == HIGH){
-  moverNangulo(144);
-  }
-  if (cientoochenta == HIGH){
-  moverNangulo(180);
-  }
+  //Bloque para indicar las acciones que el sistema toma en cada estado
+  switch(current){
+    //Señales enviadas durante el estado 0
+    case 0:
+      moverNangulo(0);
+    break;
+    //Señales enviadas durante el estado 1
+    case 1:
+      moverNangulo(36);
+    break;
+    //Señales enviadas durante el estado 2
+    case 2:
+      moverNangulo(72);
+    break;
+    //Señales enviadas durante el estado 3
+    case 3:
+      moverNangulo(108);
+    break;
+    case 4:
+      moverNangulo(144);
+    break;
+    case 5:
+      moverNangulo(180);
+    break;
+}
   unsigned long completeMillis = millis();
   if (completeMillis - previousMillis >= intervalc) {
+    current = next;
     previousMillis = completeMillis;
   }
 }
-while(estado == LOW){
+if(estado == LOW){
   pota = analogRead(potaPin); //El contador cambiará de acuerdo a la lectura del potenciómetro en el pin A3
   potb = analogRead(potbPin);
   potc = analogRead(potcPin);
