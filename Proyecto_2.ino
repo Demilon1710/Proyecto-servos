@@ -41,7 +41,7 @@ void setup() {
   pinMode(ledA, OUTPUT); //Configuración de los leds como salidas
   pinMode(ledB, OUTPUT);
 
-  moverNangulo (0); //Estado inicial de la función propia.
+  moverNangulo (0,0,0,0); //Estado inicial de la función propia.
 
   Serial.begin(9600); //Inicial serialización
 }
@@ -114,25 +114,25 @@ escribePosicion(); //Función para nombrar la posición actual
   switch(current){
     //Señales enviadas durante el estado 0
     case 0:
-      moverNangulo(0); //Función original para mover todos los servos de acuerdo al número indicado
+      moverNangulo(0, 160, 45, 90); //Función original para mover los servos en una posición específica
     break;
     //Señales enviadas durante el estado 1
     case 1:
-      moverNangulo(36);
+      moverNangulo(36, 170, 60, 110);
     break;
     //Señales enviadas durante el estado 2
     case 2:
-      moverNangulo(72);
+      moverNangulo(72, 180, 50, 100);
     break;
     //Señales enviadas durante el estado 3
     case 3:
-      moverNangulo(108);
+      moverNangulo(108, 160, 45, 30);
     break;
     case 4:
-      moverNangulo(144);
+      moverNangulo(144, 180, 90, 90);
     break;
     case 5:
-      moverNangulo(180);
+      moverNangulo(180, 180, 45, 30);
     break;
 }
   unsigned long completeMillis = millis(); //Instrucción millis para indicar el tiempo que se tardan en actuar los botones
@@ -162,11 +162,11 @@ if (estado == LOW){
 delay(1);
 }
 //Contenido de las funciones originales
-void moverNangulo(int angulo){
-  myservoa.write(angulo);
-  myservob.write(angulo);
-  myservoc.write(angulo);
-  myservod.write(angulo);
+void moverNangulo(int anguloa, int angulob, int anguloc, int angulod){
+  myservoa.write(anguloa);
+  myservob.write(angulob);
+  myservoc.write(anguloc);
+  myservod.write(angulod);
 }
 
 void numerosPot(){
